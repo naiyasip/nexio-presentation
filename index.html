@@ -2,7 +2,12 @@
 <html lang="th">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="NeXiO"/>
+    <meta name="theme-color" content="#071426"/>
     <title>NeXiO Full Presentation</title>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
     <style>
@@ -11,15 +16,29 @@
         body, html { 
             width: 100%; 
             height: 100%; 
+            height: 100dvh; /* dynamic viewport height — ใช้พื้นที่จริงของจอมือถือ */
             overflow: hidden; 
             background: #000;
             font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        /* รองรับ safe area (notch / home indicator) */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         .slide-wrapper {
             position: relative;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -50,7 +69,9 @@
             display: block;
         }
 
-        /* Controls */
+        /* =========================================================
+           Controls
+           ========================================================= */
         .controls {
             position: fixed;
             bottom: 25px;
@@ -63,13 +84,15 @@
             padding: 10px 20px;
             border-radius: 50px;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(45, 212, 191, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            opacity: 0.3;
+            opacity: 0.35;
             transition: opacity 0.3s ease;
         }
 
-        .controls:hover {
+        .controls:hover,
+        .controls:active {
             opacity: 1;
         }
 
@@ -86,6 +109,8 @@
             justify-content: center;
             font-size: 16px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .btn:hover { 
@@ -93,6 +118,10 @@
             color: white; 
             transform: scale(1.1);
             box-shadow: 0 0 20px rgba(45, 212, 191, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
         }
         
         .page-info {
@@ -109,7 +138,9 @@
             color: #2dd4bf;
         }
 
-        /* Progress Bar */
+        /* =========================================================
+           Progress Bar
+           ========================================================= */
         .progress-bar {
             position: fixed;
             top: 0;
@@ -119,9 +150,12 @@
             transition: width 0.4s ease;
             z-index: 1000;
             box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
+            padding-top: env(safe-area-inset-top);
         }
 
-        /* Slide Counter Badge */
+        /* =========================================================
+           Slide Counter Badge
+           ========================================================= */
         .slide-badge {
             position: fixed;
             top: 25px;
@@ -131,18 +165,76 @@
             padding: 8px 16px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(45, 212, 191, 0.3);
             color: #2dd4bf;
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            opacity: 0.3;
+            opacity: 0.35;
             transition: opacity 0.3s ease;
         }
 
-        .slide-badge:hover {
+        .slide-badge:hover,
+        .slide-badge:active {
             opacity: 1;
+        }
+
+        /* =========================================================
+           QR CODE PANEL (มุมขวาบน)
+           ========================================================= */
+        .qr-panel {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 12px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(45, 212, 191, 0.35);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.35;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .qr-panel:hover,
+        .qr-panel:active {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: rgba(45, 212, 191, 0.8);
+            box-shadow: 0 8px 40px rgba(45, 212, 191, 0.5);
+        }
+
+        .qr-panel img {
+            width: 90px;
+            height: 90px;
+            display: block;
+            border-radius: 8px;
+            background: #fff;
+            padding: 5px;
+        }
+
+        .qr-label {
+            font-size: 10px;
+            color: #2dd4bf;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .qr-label i {
+            margin-right: 4px;
         }
 
         /* =========================================================
@@ -159,6 +251,11 @@
             z-index: 10000;
             cursor: pointer;
             transition: opacity 0.6s ease, visibility 0.6s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 40px 20px;
+            padding-top: calc(40px + env(safe-area-inset-top));
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
         }
 
         .start-overlay.hidden {
@@ -182,6 +279,7 @@
             position: relative;
             text-align: center;
             z-index: 2;
+            max-width: 100%;
         }
 
         .start-logo {
@@ -245,11 +343,17 @@
             box-shadow: 0 8px 30px rgba(45, 212, 191, 0.4);
             letter-spacing: 1px;
             animation: btnBounce 2s ease-in-out infinite;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .start-btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 12px 40px rgba(45, 212, 191, 0.7);
+        }
+
+        .start-btn:active {
+            transform: translateY(0) scale(0.98);
         }
 
         @keyframes btnBounce {
@@ -268,12 +372,261 @@
             color: #2dd4bf;
             margin-right: 8px;
         }
+
+        /* =========================================================
+           QR CODE บน START OVERLAY
+           ========================================================= */
+        .start-qr {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .start-qr:hover {
+            border-color: rgba(45, 212, 191, 0.7);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+        }
+
+        .start-qr img {
+            width: 130px;
+            height: 130px;
+            border-radius: 10px;
+            background: #fff;
+            padding: 8px;
+            display: block;
+        }
+
+        .start-qr-label {
+            color: #2dd4bf;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .start-qr-label i {
+            margin-right: 6px;
+        }
+
+        .start-qr-url {
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* =========================================================
+           MOBILE FULLSCREEN BUTTON (มุมล่างซ้าย — สำหรับมือถือ)
+           ========================================================= */
+        .mobile-fs-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 999;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            color: #2dd4bf;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0.35;
+            transition: opacity 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .mobile-fs-btn:hover,
+        .mobile-fs-btn:active {
+            opacity: 1;
+        }
+
+        /* =========================================================
+           MOBILE / LANDSCAPE — ปรับ UI อัตโนมัติ
+           ========================================================= */
+        @media (max-width: 900px) {
+            .slide-badge {
+                top: 12px;
+                left: 12px;
+                font-size: 10px;
+                padding: 6px 12px;
+            }
+
+            .qr-panel {
+                top: 12px;
+                right: 12px;
+                padding: 8px;
+                transform: scale(0.75);
+                transform-origin: top right;
+            }
+
+            .qr-panel img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .qr-label {
+                font-size: 8px;
+            }
+
+            .controls {
+                bottom: 12px;
+                right: 12px;
+                padding: 8px 14px;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
+            }
+
+            .page-info {
+                font-size: 13px;
+                min-width: 55px;
+            }
+
+            .mobile-fs-btn {
+                bottom: 12px;
+                left: 12px;
+                width: 34px;
+                height: 34px;
+                font-size: 12px;
+            }
+        }
+
+        /* แนวนอนบนมือถือ — ย่อ UI ให้เล็กลงสุด */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .slide-badge {
+                top: 8px;
+                left: 8px;
+                font-size: 9px;
+                padding: 4px 10px;
+                letter-spacing: 1px;
+            }
+
+            .qr-panel {
+                top: 8px;
+                right: 8px;
+                padding: 6px;
+                transform: scale(0.6);
+                transform-origin: top right;
+            }
+
+            .qr-panel img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .qr-label {
+                font-size: 7px;
+            }
+
+            .controls {
+                bottom: 8px;
+                right: 8px;
+                padding: 6px 12px;
+                gap: 8px;
+            }
+
+            .btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .page-info {
+                font-size: 12px;
+                min-width: 50px;
+            }
+
+            .mobile-fs-btn {
+                bottom: 8px;
+                left: 8px;
+                width: 30px;
+                height: 30px;
+                font-size: 11px;
+            }
+
+            .progress-bar {
+                height: 2px;
+            }
+
+            .start-title {
+                font-size: 42px;
+            }
+
+            .start-subtitle {
+                font-size: 14px;
+                margin-bottom: 25px;
+            }
+
+            .start-btn {
+                padding: 14px 35px;
+                font-size: 16px;
+            }
+
+            .start-logo {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+                margin-bottom: 18px;
+            }
+
+            .start-qr {
+                margin-top: 25px;
+                padding: 12px 18px;
+            }
+
+            .start-qr img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .start-hint {
+                margin-top: 15px;
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="progress-bar" id="progressBar"></div>
     <div class="slide-badge" id="slideBadge">NeXiO Presentation</div>
+
+    <!-- =========================================================
+         QR CODE PANEL - มุมขวาบน (แสดงตลอดเวลา)
+         ========================================================= -->
+    <a class="qr-panel" 
+       href="https://naiyasip.github.io/nexio-presentation/" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Scan to open presentation link">
+        <img 
+            src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fnaiyasip.github.io%2Fnexio-presentation%2F&color=071426&bgcolor=FFFFFF&margin=0" 
+            alt="QR Code - NeXiO Presentation">
+        <div class="qr-label">
+            <i class="fas fa-qrcode"></i>Scan Me
+        </div>
+    </a>
 
     <div class="slide-wrapper" id="container"></div>
 
@@ -282,6 +635,13 @@
         <div class="page-info"><span id="current">1</span> / 14</div>
         <button class="btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
     </div>
+
+    <!-- =========================================================
+         MOBILE FULLSCREEN BUTTON (มุมล่างซ้าย)
+         ========================================================= -->
+    <button class="mobile-fs-btn" id="mobileFsBtn" aria-label="Toggle fullscreen">
+        <i class="fas fa-expand"></i>
+    </button>
 
     <!-- =========================================================
          START OVERLAY - กดเพื่อเข้า Fullscreen
@@ -299,8 +659,22 @@
             </button>
             <div class="start-hint">
                 <i class="fas fa-info-circle"></i>
-                Click to enter fullscreen mode
+                Tap to enter fullscreen mode
             </div>
+
+            <!-- =============================================
+                 QR CODE บน START OVERLAY
+                 ============================================= -->
+            <div class="start-qr">
+                <img 
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=https%3A%2F%2Fnaiyasip.github.io%2Fnexio-presentation%2F&color=071426&bgcolor=FFFFFF&margin=0" 
+                    alt="QR Code - NeXiO Presentation">
+                <div class="start-qr-label">
+                    <i class="fas fa-mobile-alt"></i>Scan to view on mobile
+                </div>
+                <div class="start-qr-url">naiyasip.github.io/nexio-presentation</div>
+            </div>
+
         </div>
     </div>
 
@@ -321,7 +695,9 @@
         let currentIndex = 0;
         const container = document.getElementById('container');
 
-        // Preload all slides
+        // =========================================================
+        // Preload slides
+        // =========================================================
         fileNames.forEach((file, index) => {
             const div = document.createElement('div');
             div.className = `slide ${index === 0 ? 'active' : ''}`;
@@ -348,8 +724,10 @@
             updateSlide();
         }
 
+        // =========================================================
         // Keyboard Controls
-        document.addEventListener('keydown', (e) => {
+        // =========================================================
+        window.addEventListener('keydown', (e) => {
             if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
                 e.preventDefault();
                 changeSlide(1);
@@ -358,12 +736,42 @@
                 e.preventDefault();
                 changeSlide(-1);
             }
-            // กด F เพื่อ toggle fullscreen
             if (e.key === "f" || e.key === "F") {
                 toggleFullscreen();
             }
-            // กด ESC ออกจาก fullscreen (browser handle เอง)
         });
+
+        // =========================================================
+        // Touch Swipe (บนมือถือ — ปัดซ้าย/ขวาเพื่อเปลี่ยนสไลด์)
+        // =========================================================
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const deltaTime = Date.now() - touchStartTime;
+
+            // ปัดแนวนอน (ซ้าย/ขวา) เป็นหลัก, ปัดเร็ว (< 400ms), ระยะ > 50px
+            if (Math.abs(deltaX) > 50 && 
+                Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && 
+                deltaTime < 400) {
+                if (deltaX < 0) {
+                    changeSlide(1);   // ปัดซ้าย → ถัดไป
+                } else {
+                    changeSlide(-1);  // ปัดขวา → ย้อนกลับ
+                }
+            }
+        }, { passive: true });
 
         updateSlide();
 
@@ -407,48 +815,36 @@
         }
 
         // =========================================================
-        // START BUTTON - เข้า Fullscreen
+        // START BUTTON → ซ่อน overlay + เข้า fullscreen
         // =========================================================
         const startOverlay = document.getElementById('startOverlay');
         const startBtn = document.getElementById('startBtn');
 
-        function startPresentation() {
+        function startPresentation(e) {
+            if (e) e.stopPropagation();
+
             // ซ่อน overlay
             startOverlay.classList.add('hidden');
             
-            // ขอ Fullscreen
+            // ขอ Fullscreen (จาก user gesture — จะไม่ถูกบล็อก)
             enterFullscreen().catch(err => {
                 console.warn('Fullscreen request was denied:', err);
-                // ถ้าถูกบล็อก ยังคงแสดง presentation ต่อ (แต่ไม่ fullscreen)
             });
+
+            // โฟกัสกลับมาที่ window เพื่อให้ keyboard ทำงาน
+            window.focus();
         }
 
         startBtn.addEventListener('click', startPresentation);
         startOverlay.addEventListener('click', startPresentation);
 
         // =========================================================
-        // AUTO FULLSCREEN - ลองเข้าอัตโนมัติเมื่อโหลด
-        // (บาง browser บล็อก จะแสดง overlay ให้กดแทน)
+        // MOBILE FULLSCREEN BUTTON
         // =========================================================
-        window.addEventListener('load', () => {
-            // ลองเข้าอัตโนมัติก่อน
-            enterFullscreen().then(() => {
-                // สำเร็จ - ซ่อน overlay
-                startOverlay.classList.add('hidden');
-            }).catch(() => {
-                // ถูกบล็อก - แสดง overlay ให้ผู้ใช้กด
-                console.log('Auto-fullscreen blocked. Waiting for user click.');
-            });
-        });
-
-        // =========================================================
-        // SYNC FULLSCREEN STATE
-        // =========================================================
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                // ออกจาก fullscreen แล้ว - แสดง overlay กลับมา? 
-                // (หรือไม่ต้องทำอะไร เพื่อให้ผู้ใช้กด F กลับเข้าได้)
-            }
+        const mobileFsBtn = document.getElementById('mobileFsBtn');
+        mobileFsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFullscreen();
         });
 
         // =========================================================
@@ -456,6 +852,16 @@
         // =========================================================
         document.addEventListener('dblclick', () => {
             toggleFullscreen();
+        });
+
+        // =========================================================
+        // HANDLE ORIENTATION CHANGE (หมุนจอ)
+        // =========================================================
+        window.addEventListener('orientationchange', () => {
+            // รอให้ browser คำนวณ layout ใหม่ก่อน
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 200);
         });
     </script>
 </body>
