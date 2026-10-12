@@ -248,10 +248,10 @@
         display: flex;
     }
 
-    .fullscreen-video-container video {
+    .fullscreen-video-container iframe {
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        border: none;
         background: #000;
     }
 
@@ -352,7 +352,7 @@
             </div>
 
             <div class="video-hint">
-                [Insert your demo file at the &lt;video&gt; tag, or project from external source]
+                Click play to watch the live demo session
             </div>
         </div>
 
@@ -375,7 +375,7 @@
 </div>
 
 <!-- =========================================================
-     FULLSCREEN VIDEO OVERLAY
+     FULLSCREEN VIDEO OVERLAY (Google Drive via iframe)
      ========================================================= -->
 <div class="fullscreen-video-container" id="fsContainer">
     <button class="close-fs" id="closeFs" aria-label="Close video">
@@ -383,19 +383,17 @@
     </button>
 
     <!--
-        🎬 ใส่ไฟล์วิดีโอในเครื่องตรงนี้
-        - ถ้าไฟล์อยู่โฟลเดอร์เดียวกับ HTML:  src="demoio.mp4"
-        - ถ้าอยู่โฟลเดอร์ videos:            src="videos/demoio.mp4"
-        - ถ้าฝัง base64:                      src="data:video/mp4;base64,....."
+        🎬 Google Drive Video (File ID: 18l1oBORUh6c-0kly_N5PzqrK4mPS1TxM)
+        ใช้ /preview สำหรับ embed — เสถียรที่สุด
+        ✅ ต้องตั้ง sharing เป็น "Anyone with the link" ก่อน
     -->
-    <video
+    <iframe
         id="fsVideo"
-        controls
-        playsinline
-        preload="metadata">
-        <source src="demoio.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+        src="about:blank"
+        data-src="https://drive.google.com/file/d/18l1oBORUh6c-0kly_N5PzqrK4mPS1TxM/preview"
+        allow="autoplay; fullscreen"
+        allowfullscreen>
+    </iframe>
 </div>
 
 <!-- =========================================================
@@ -422,12 +420,15 @@
         const fsVideo      = document.getElementById('fsVideo');
         const closeFsBtn   = document.getElementById('closeFs');
 
-        // ---- คลิก Play → เปิด fullscreen + เล่นวิดีโอ ----
+        // ---- คลิก Play → เปิด fullscreen + โหลด iframe ----
         playBtn.addEventListener('click', function() {
+            // โหลด iframe (ใส่ src จริงตอนกด play เพื่อ autoplay)
+            fsVideo.src = fsVideo.dataset.src;
+
             // แสดง overlay
             fsContainer.classList.add('active');
 
-            // ขอ fullscreen (ถ้าเบราว์เซอร์รองรับ)
+            // ขอ fullscreen
             const el = fsContainer;
             if (el.requestFullscreen) {
                 el.requestFullscreen().catch(function(err) {
@@ -438,22 +439,12 @@
             } else if (el.msRequestFullscreen) {
                 el.msRequestFullscreen();
             }
-
-            // เล่นวิดีโอ
-            fsVideo.currentTime = 0;
-            const playPromise = fsVideo.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(function(err) {
-                    console.warn('Video play failed:', err);
-                });
-            }
         });
 
         // ---- ฟังก์ชันปิดวิดีโอ ----
         function closeVideo() {
-            // หยุดวิดีโอ
-            fsVideo.pause();
-            fsVideo.currentTime = 0;
+            // reset iframe → หยุดเล่น
+            fsVideo.src = 'about:blank';
 
             // ซ่อน overlay
             fsContainer.classList.remove('active');
@@ -471,18 +462,13 @@
         // ---- ปุ่ม Close ----
         closeFsBtn.addEventListener('click', closeVideo);
 
-        // ---- กด ESC ก็ปิด (browser จะออก fullscreen เอง แต่เราต้องซ่อน overlay ด้วย) ----
+        // ---- กด ESC ก็ปิด ----
         document.addEventListener('fullscreenchange', function() {
             if (!document.fullscreenElement && fsContainer.classList.contains('active')) {
-                // ผู้ใช้กด ESC
-                fsVideo.pause();
-                fsVideo.currentTime = 0;
+                fsVideo.src = 'about:blank';
                 fsContainer.classList.remove('active');
             }
         });
-
-        // ---- เล่นจบ → ปิดอัตโนมัติ ----
-        fsVideo.addEventListener('ended', closeVideo);
     })();
 </script>
 
