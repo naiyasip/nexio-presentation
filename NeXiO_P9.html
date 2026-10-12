@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>NeXiO - Platform Architecture</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+        rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+      background: #0a1628;
+      color: white;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =========================================================
+       FULLSCREEN SLIDE (fixed 1280x720, scaled to fit viewport)
+       ========================================================= */
+    .slide-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 720px;
+      transform-origin: top left;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg,
+        #0a1628 0%,
+        #142642 50%,
+        #0d1b2a 100%);
+      /* scale will be set by JS to fill screen */
+    }
+
+    /* Background effects */
+    .bg-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 720px;
+      opacity: 0.07;
+      background-image:
+        radial-gradient(circle at 15% 85%, rgba(59,130,246,0.45) 0%, transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(45,212,191,0.35) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .grid-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 720px;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+    .header {
+      position: absolute;
+      top: 34px;
+      left: 60px;
+      width: 1160px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 65px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #3b82f6, #2dd4bf);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 18px rgba(59,130,246,0.30);
+    }
+
+    .header-text {
+      font-size: 31px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .header-subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.58);
+      margin-top: 3px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(45,212,191,0.08);
+      border: 1px solid rgba(45,212,191,0.22);
+      border-radius: 20px;
+      padding: 9px 18px;
+    }
+
+    .header-right i {
+      color: #2dd4bf;
+      font-size: 13px;
+    }
+
+    .header-right span {
+      font-size: 13px;
+      color: rgba(255,255,255,0.82);
+    }
+
+    /* =========================================================
+       MAIN ARCHITECTURE AREA
+       ========================================================= */
+    .main-content {
+      position: absolute;
+      top: 125px;
+      left: 60px;
+      width: 1160px;
+      height: 510px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.48);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    /* =========================================================
+       ARCHITECTURE CONTAINER
+       ========================================================= */
+    .architecture {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* =========================================================
+       ARCHITECTURE CARD
+       ========================================================= */
+    .arch-card {
+      position: relative;
+      width: 480px;
+      height: 360px;
+      border-radius: 18px;
+      padding: 25px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+    }
+
+    .python-card {
+      border-top: 3px solid #3b82f6;
+    }
+
+    .react-card {
+      border-top: 3px solid #2dd4bf;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+    }
+
+    .python-icon {
+      background: rgba(59,130,246,0.13);
+      color: #60a5fa;
+    }
+
+    .react-icon {
+      background: rgba(45,212,191,0.13);
+      color: #2dd4bf;
+    }
+
+    .card-title {
+      font-size: 23px;
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      margin-top: 4px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.58);
+    }
+
+    /* =========================================================
+       FEATURE LIST
+       ========================================================= */
+    .feature-list {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 38px;
+      padding: 7px 11px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.065);
+      border-radius: 8px;
+    }
+
+    .feature-row i {
+      width: 22px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .python-card .feature-row i {
+      color: #60a5fa;
+    }
+
+    .react-card .feature-row i {
+      color: #2dd4bf;
+    }
+
+    .feature-row span {
+      font-size: 14px;
+      color: rgba(255,255,255,0.86);
+    }
+
+    /* =========================================================
+       CONNECTOR
+       ========================================================= */
+    .connector {
+      width: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .connector-line {
+      position: relative;
+      width: 70px;
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #2dd4bf);
+      box-shadow: 0 0 12px rgba(45,212,191,0.35);
+    }
+
+    .connector-line::before,
+    .connector-line::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+
+    .connector-line::before {
+      left: 0;
+      background: #3b82f6;
+    }
+
+    .connector-line::after {
+      right: 0;
+      background: #2dd4bf;
+    }
+
+    .connector-label {
+      margin-top: 13px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.42);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    /* =========================================================
+       PLATFORM BASE
+       ========================================================= */
+    .platform-base {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      width: 850px;
+      height: 62px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, rgba(59,130,246,0.10), rgba(45,212,191,0.10));
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 45px;
+    }
+
+    .base-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.78);
+    }
+
+    .base-item i {
+      font-size: 15px;
+    }
+
+    .base-item:nth-child(1) i {
+      color: #60a5fa;
+    }
+
+    .base-item:nth-child(2) i {
+      color: #2dd4bf;
+    }
+
+    .base-item:nth-child(3) i {
+      color: #a78bfa;
+    }
+
+    /* =========================================================
+       BOTTOM VALUE BOXES
+       ========================================================= */
+    .value-section {
+      position: absolute;
+      left: 60px;
+      bottom: 27px;
+      width: 1160px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .value-box {
+      width: 260px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .value-box i {
+      font-size: 15px;
+    }
+
+    .value-box span {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.84);
+    }
+
+    .value-box:nth-child(1) i {
+      color: #60a5fa;
+    }
+
+    .value-box:nth-child(2) i {
+      color: #2dd4bf;
+    }
+
+    .value-box:nth-child(3) i {
+      color: #a78bfa;
+    }
+
+    /* =========================================================
+       CENTER NeXiO LABEL
+       ========================================================= */
+    .nexio-label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 130px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #1e3a8a, #115e59);
+      border: 1px solid rgba(255,255,255,0.20);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.30);
+      z-index: 5;
+    }
+
+    .nexio-label span {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- Background -->
+  <div class="bg-pattern"></div>
+  <div class="grid-lines"></div>
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">
+        <i class="fas fa-layer-group"></i>
+      </div>
+      <div>
+        <div class="header-text">
+          NeXiO — Digital Engineering Platform
+        </div>
+        <div class="header-subtitle">
+          Platform Architecture for MMA1 DCS Migration Phase 2
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <i class="fas fa-code"></i>
+      <span>RMT In-House Development</span>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MAIN ARCHITECTURE
+       ===================================================== -->
+  <div class="main-content">
+    <div class="section-label">
+      NeXiO SOFTWARE ARCHITECTURE
+    </div>
+
+    <div class="architecture">
+      <!-- PYTHON CORE -->
+      <div class="arch-card python-card">
+        <div class="card-header">
+          <div class="card-icon python-icon">
+            <i class="fab fa-python"></i>
+          </div>
+          <div>
+            <div class="card-title">Python Core</div>
+            <div class="card-subtitle">Core Migration &amp; Data Processing Logic</div>
+          </div>
+        </div>
+        <div class="feature-list">
+          <div class="feature-row">
+            <i class="fas fa-exchange-alt"></i>
+            <span>DCS Migration Processing</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-database"></i>
+            <span>Engineering Data Processing</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-tags"></i>
+            <span>Tag Transformation &amp; Standardization</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-project-diagram"></i>
+            <span>Migration Mapping &amp; Logic</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-check-double"></i>
+            <span>Automated Validation &amp; Verification</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECTOR -->
+      <div class="connector">
+        <div class="connector-line"></div>
+        <div class="connector-label">
+          DATA &amp;<br/>CONTROL FLOW
+        </div>
+      </div>
+
+      <!-- REACT / TYPESCRIPT -->
+      <div class="arch-card react-card">
+        <div class="card-header">
+          <div class="card-icon react-icon">
+            <i class="fab fa-react"></i>
+          </div>
+          <div>
+            <div class="card-title">React / TypeScript</div>
+            <div class="card-subtitle">Interactive Management Dashboard &amp; Visualization</div>
+          </div>
+        </div>
+        <div class="feature-list">
+          <div class="feature-row">
+            <i class="fas fa-desktop"></i>
+            <span>Interactive Management Dashboard</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-chart-line"></i>
+            <span>Migration Progress Visualization</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-search"></i>
+            <span>Engineering Data Monitoring</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-sliders-h"></i>
+            <span>Interactive Control &amp; Management</span>
+          </div>
+          <div class="feature-row">
+            <i class="fas fa-file-alt"></i>
+            <span>Result &amp; Status Reporting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center label -->
+      <div class="nexio-label">
+        <span>NeXiO</span>
+      </div>
+    </div>
+
+    <!-- PLATFORM FOUNDATION -->
+    <div class="platform-base">
+      <div class="base-item">
+        <i class="fas fa-cogs"></i>
+        <span>Migration Engine</span>
+      </div>
+      <div class="base-item">
+        <i class="fas fa-database"></i>
+        <span>Engineering Data</span>
+      </div>
+      <div class="base-item">
+        <i class="fas fa-shield-alt"></i>
+        <span>Validation &amp; Control</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       VALUE STATEMENT
+       ===================================================== -->
+  <div class="value-section">
+    <div class="value-box">
+      <i class="fas fa-bolt"></i>
+      <span>AUTOMATION</span>
+    </div>
+    <div class="value-box">
+      <i class="fas fa-eye"></i>
+      <span>VISIBILITY</span>
+    </div>
+    <div class="value-box">
+      <i class="fas fa-sliders-h"></i>
+      <span>ENGINEERING CONTROL</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- =========================================================
+     FULLSCREEN SCALING SCRIPT
+     ========================================================= -->
+<script>
+  (function() {
+    const slide = document.getElementById('slideContainer');
+    const baseWidth = 1280;
+    const baseHeight = 720;
+
+    function scaleSlide() {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Calculate scale to fit the entire slide while preserving aspect ratio
+      const scaleX = viewportWidth / baseWidth;
+      const scaleY = viewportHeight / baseHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      // Apply scale from top-left origin
+      slide.style.transform = `scale(${scale})`;
+
+      // Center the scaled slide within the viewport
+      const scaledWidth = baseWidth * scale;
+      const scaledHeight = baseHeight * scale;
+      const offsetX = (viewportWidth - scaledWidth) / 2;
+      const offsetY = (viewportHeight - scaledHeight) / 2;
+
+      slide.style.left = offsetX + 'px';
+      slide.style.top = offsetY + 'px';
+    }
+
+    // Initial scale
+    scaleSlide();
+
+    // Rescale on window resize
+    window.addEventListener('resize', scaleSlide);
+  })();
+</script>
+
+</body>
+</html>
